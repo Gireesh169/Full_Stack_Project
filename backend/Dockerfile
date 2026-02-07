@@ -1,20 +1,18 @@
-# Use Java 17 with Maven
-FROM maven:3.9.6-eclipse-temurin-17
-
-# Set working directory
+# ---- Build stage ----
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy pom.xml first (for caching)
 COPY pom.xml .
-
-# Download dependencies
 RUN mvn dependency:go-offline
 
-# Copy source code
-COPY src src
-
-# Build the application
+COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Run the application
-CMD ["java", "-jar", "target/*.jar"]
+# ---- Run stage ----
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]

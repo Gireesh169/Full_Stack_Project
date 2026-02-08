@@ -1,0 +1,11 @@
+[build]
+builder = "dockerfile"
+dockerfile = "./Dockerfile"
+
+[deploy]
+startCommand = "java -jar target/smart-city-backend-1.0.0.jar"
+restartPolicyMaxRetries = 5
+restartPolicyMaxRetryDelay = 300
+
+[[services]]
+name = "smart-city-backend"
